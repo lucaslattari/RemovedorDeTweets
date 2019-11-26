@@ -146,7 +146,6 @@ if __name__ == "__main__":
     with open('settings.ini', 'r') as file:
         parser = configparser.ConfigParser()
         parser.read('settings.ini')
-
         
         chaveApi = input("Informe chave da API do Twitter. Para usar a padrão, apenas aperte [ENTER] > ")
         if chaveApi:
@@ -157,7 +156,7 @@ if __name__ == "__main__":
         for section in parser.sections():
             for key, value in parser.items(section):
                 if(key == 'diasanterioresamanter'):
-                    diasAManter = input("Preciso que você me diga quantos dias para trás você quer manter. Por exemplo, se você informar 7 dias, apenas os tweets e likes mais antigos do que uma semana serão listados para remoção. O valor padrão é",value,"> ")
+                    diasAManter = input("Preciso que você me diga quantos dias para trás você quer manter. Por exemplo, se você informar 7 dias, apenas os tweets e likes mais antigos do que uma semana serão listados para remoção. O valor padrão é 365 > ")
                     if diasAManter:
                         days_to_keep = int(diasAManter)
                     else:
