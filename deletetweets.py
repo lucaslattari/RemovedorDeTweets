@@ -8,13 +8,11 @@ installPackage('tweepy')
 
 import tweepy
 import webbrowser
-from tqdm import tqdm
 from datetime import datetime, timedelta
 import time
 import configparser
 import sys
 
-#insira as chaves da API do Twitter aqui embaixo
 CONSUMER_KEY = ''
 CONSUMER_SECRET = ''
 days_to_keep = 365
@@ -54,7 +52,7 @@ def log_tweep_error(tweep_error):
         elif tweep_error.api_code == 429:
             print("\nError: request cannot be served due to the app rate limit having been exhausted for the resource.")
         else:
-            print("\nError: error while using the REST API:", tweep_error)
+            print("\nError while using the REST API:", tweep_error)
     else:
         print("\nError with Twitter:", tweep_error) 
 
@@ -69,7 +67,9 @@ def batch_delete(api, rodarsemperguntar):
             if rodarsemperguntar != 's':
                 confirmarAntesDeDeletarTweets = input("Você deseja confirmar antes de remover cada tweet? Digite s para sempre confirmar antes de remover e qualquer outra coisa em caso contrário > ")
                 if(confirmarAntesDeDeletarTweets != 's'):
-                    confirmarAntesDeDeletarTweets = input("Tem certeza? SE VOCÊ APERTAR QUALQUER COISA DIFERENTE DE s, SEUS TWEETS SERÃO REMOVIDOS SEM CONFIRMAÇÃO > ")
+                    confirmarAntesDeDeletarTweets = input("CUIDADO: SE VOCÊ APERTAR QUALQUER COISA DIFERENTE DE s, SEUS TWEETS SERÃO REMOVIDOS SEM CONFIRMAÇÃO > ")
+                    if confirmarAntesDeDeletarTweets == 's':
+                        continue
             else:
                 confirmarAntesDeDeletarTweets = 'n'
             print("Buscando tweets a serem removidos", end =" ")
@@ -82,12 +82,12 @@ def batch_delete(api, rodarsemperguntar):
                         print('.', end =" ")
                     if tweet.created_at < cutoff_date:
                         if confirmarAntesDeDeletarTweets == 's':
-                            print("Texto do tweet:", tweet.text.translate(non_bmp_map))
+                            print("\nTexto do tweet:", tweet.text.translate(non_bmp_map))
                             print("Data do tweet:", tweet.created_at)
                             escolha = input("Deseja apagar esse tweet? Responda s para sim e qualquer outra coisa para não apagar > ")
                             if escolha == 's':
                                 api.destroy_status(tweet.id)
-                                print ("Apaguei tweet com o id: ", tweet.id, end =" ")
+                                print ("Apaguei tweet com o id:", tweet.id, end =" ")
                                 tweetsDeletados += 1
                         else:
                             api.destroy_status(tweet.id)
@@ -95,7 +95,6 @@ def batch_delete(api, rodarsemperguntar):
                             tweetsDeletados += 1                
                 except tweepy.TweepError as e:
                     log_tweep_error(e)
-
                 iterations += 1
             print("\nForam deletados", tweetsDeletados, "tweets.")
             break
@@ -110,7 +109,9 @@ def batch_delete(api, rodarsemperguntar):
             if rodarsemperguntar != 's':
                 confirmarAntesDeDescurtirTweets = input("Você deseja confirmar antes de remover cada curtida? Digite s para sempre confirmar antes de remover e qualquer outra coisa em caso contrário > ")
                 if confirmarAntesDeDescurtirTweets != 's':
-                    confirmarAntesDeDescurtirTweets = input("Tem certeza? SE VOCÊ DIGITAR QUALQUER COISA DIFERENTE DE s, SUAS CURTIDAS SERÃO REMOVIDAS SEM PRÉVIO AVISO > ")
+                    confirmarAntesDeDescurtirTweets = input("CUIDADO: SE VOCÊ DIGITAR QUALQUER COISA DIFERENTE DE s, SUAS CURTIDAS SERÃO REMOVIDAS SEM PRÉVIO AVISO > ")
+                    if confirmarAntesDeDescurtirTweets == 's':
+                        continue
             else:
                 confirmarAntesDeDescurtirTweets = 'n'
 
@@ -145,6 +146,8 @@ if __name__ == "__main__":
     with open('settings.ini', 'r') as file:
         parser = configparser.ConfigParser()
         parser.read('settings.ini')
+
+        
         chaveApi = input("Informe chave da API do Twitter. Para usar a padrão, apenas aperte [ENTER] > ")
         if chaveApi:
             CONSUMER_KEY = chaveApi
@@ -154,7 +157,7 @@ if __name__ == "__main__":
         for section in parser.sections():
             for key, value in parser.items(section):
                 if(key == 'diasanterioresamanter'):
-                    diasAManter = input("Preciso que você me diga quantos dias para trás você quer manter. Por exemplo, se você informar 7 dias, apenas os tweets e likes mais antigos do que uma semana serão listados para remoção. O valor padrão é 365 > ")
+                    diasAManter = input("Preciso que você me diga quantos dias para trás você quer manter. Por exemplo, se você informar 7 dias, apenas os tweets e likes mais antigos do que uma semana serão listados para remoção. O valor padrão é",value,"> ")
                     if diasAManter:
                         days_to_keep = int(diasAManter)
                     else:
